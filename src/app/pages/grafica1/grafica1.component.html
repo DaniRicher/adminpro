@@ -1,11 +1,14 @@
 <div class="row">
 
     <div class="col-6">
-        <app-dona [titulo]="'Ventas'"></app-dona>
+        <app-dona titulo="Ventas"></app-dona>
     </div>
 
     <div class="col-6">
-      <app-dona ></app-dona>
+      <app-dona titulo="Compras"
+                [labels]="labels1"
+                [data]="data">
+      </app-dona>
 
       </div>
     
@@ -14,11 +17,11 @@
 <div class="row">
     
     <div class="col-6">
-      <app-dona></app-dona>
+      <app-dona titulo="Compras 2"></app-dona>
     </div>
 
     <div class="col-6">
-      <app-dona></app-dona>
+      <app-dona titulo="Mas compras"></app-dona>
       </div>
     
 </div>

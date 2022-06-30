@@ -10,12 +10,11 @@ import { ChartData, Color } from 'chart.js';
 })
 export class DonaComponent  {
   
-  @Input() titulo: string = '';
-  sinTitulo: string = 'Sin titulo';
+  @Input() titulo: string = 'Sin titulo';
 
   constructor() {  }
-  public doughnutChartLabels: string[] = [ 'Download Sales', 'In-Store Sales', 'Mail-Order Sales' ];
-  public doughnutChartData: ChartData<'doughnut'> = {
+  @Input('labels') doughnutChartLabels: string[] = [ 'Label1', 'Label2', 'Label3' ];
+  @Input('data') doughnutChartData: ChartData<'doughnut'> = {
     labels: this.doughnutChartLabels,
     datasets: [
       {
