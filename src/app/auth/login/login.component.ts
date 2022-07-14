@@ -60,7 +60,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
 
   login(){
 
-    console.log( this.loginForm.value );
+    // console.log( this.loginForm.value );
 
     this.usuarioService.login ( this.loginForm.value )
           .subscribe( data => {
@@ -71,7 +71,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
             }
           this.router.navigateByUrl('/');
 
-            console.log(data);
+            // console.log(data);
           }, (err)=> {
             console.log(err);
             Swal.fire('Error', err.error.msg, 'error')
