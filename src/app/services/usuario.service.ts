@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { catchError, map, Observable, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { CargarUsuarios } from '../interfaces/cargar-usuarios.interface';
 import { LoginForm } from '../interfaces/login-form.interfaces';
 import { RegisterForm } from '../interfaces/register-form.interfaces';
 import { Usuario } from '../models/usuario.model';
@@ -26,12 +27,23 @@ public usuario!: Usuario;
   get token():string {
     return localStorage.getItem('token') || '';
   }
+
   get uid() {
     return this.usuario.uid
   }
+
+  get headers() {
+    return { 
+      headers: {
+        'x-token': this.token,
+      }}
+  }
+
   logout() {
-    localStorage.removeItem('token');
-    
+
+      localStorage.removeItem('token');
+      this.router.navigateByUrl('/login');
+
       google.accounts.id.revoke( 'richerdani3@gmail.com', () => {
       this.router.navigateByUrl('/login');
     });
@@ -71,17 +83,11 @@ public usuario!: Usuario;
   }
 
   actualizarPerfil( data: { email: string, nombre: string, role: string }) {
-
     data = {
       ...data,
       role: this.usuario.role!
     }
-
-    return this.http.put(`${ base_url }/usuarios/${ this.uid }`, data, {
-      headers: {
-        'x-token' : this.token
-      },
-    });
+    return this.http.put(`${ base_url }/usuarios/${ this.uid }`, data, this.headers );
 
   }
 
@@ -104,6 +110,35 @@ public usuario!: Usuario;
           localStorage.setItem('token', resp.token);
         }),
       )
+  }
+
+  cargarUsuarios( desde:number = 0 ) {
+    const url = `${ base_url }/usuarios?desde=${ desde }`;
+    return this.http.get<CargarUsuarios>( url, this.headers )
+        .pipe(
+          map( resp=> {
+            const usuarios = resp.usuarios.map(
+              user => new Usuario( user.nombre, user.email, '', user.img, user.google, user.role, user.uid ) 
+              );
+            return {
+              total: resp.total,
+              usuarios
+            };
+          }),
+        );
+  }
+
+  eliminarUsuario( usuario:Usuario ) {
+    const url = `${ base_url }/usuarios/${ usuario.uid }`
+
+    return this.http.delete( url, this.headers );
+   
+  }
+
+  guardarUsuario( usuario: Usuario ) {
+
+    return this.http.put(`${ base_url }/usuarios/${ usuario.uid }`, usuario, this.headers );
+
   }
 
 }
