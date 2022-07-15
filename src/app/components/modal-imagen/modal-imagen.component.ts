@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { FileUploadService } from 'src/app/services/file-upload.service';
+import { ModalImagenService } from 'src/app/services/modal-imagen.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-modal-imagen',
@@ -8,15 +11,55 @@ import { Component, OnInit } from '@angular/core';
 })
 export class ModalImagenComponent implements OnInit {
 
-  public ocultarModal: boolean = false;
+  public imagenSubir!: File;
+  public imgTemp: any;;
 
-  constructor() { }
+
+
+  constructor( public modalImagenService: ModalImagenService,
+               public fileUploadService: FileUploadService ) { }
 
   ngOnInit(): void {
   }
 
   cerrarModal() {
-    this.ocultarModal = true;
+    this.imgTemp = null;
+    this.modalImagenService.cerrarModal();
   }
+
+  cambiarImagen( event:any ) {
+    
+    let file: File = event.target.files[0];
+
+    this.imagenSubir = file;
+
+    if( !file ) { 
+      return this.imgTemp = null;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL( file );
+
+    return reader.onloadend = () => {
+      this.imgTemp = reader.result;
+    }
+  }
+
+  subirImagen() {
+
+    const id = this.modalImagenService.id;
+    const tipo = this.modalImagenService.tipo;
+    this.fileUploadService
+        .actualizarFoto( this.imagenSubir, tipo, id)
+          .then( img => {
+            Swal.fire( 'Actualizado', 'Foto actualizada correctamente', 'success' );
+            this.modalImagenService.nuevaImagen.emit( img );
+            this.cerrarModal();
+          }).catch( err => {
+            console.log(err);
+          Swal.fire('Error', 'No se pudo actualizar la imagen', 'error');
+          });
+  }
+
 
 }
