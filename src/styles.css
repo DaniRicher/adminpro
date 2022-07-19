@@ -25,6 +25,11 @@
 .w200{
     width: 200px;
 }
+
+.w75{
+    width: 75px;
+}
+
 .avatar {
     /* border: 1px solid gray; */
     border-radius: 100%;

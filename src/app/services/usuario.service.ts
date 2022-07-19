@@ -28,6 +28,10 @@ public usuario!: Usuario;
     return localStorage.getItem('token') || '';
   }
 
+  get role() : 'ADMIN_ROLE' | 'USER_ROLE' {
+    return this.usuario.role!
+  }
+
   get uid() {
     return this.usuario.uid
   }
@@ -39,9 +43,18 @@ public usuario!: Usuario;
       }}
   }
 
+  guardarLocalStorage( token: string, menu: any){
+
+    localStorage.setItem('token', token);
+    localStorage.setItem('menu', JSON.stringify( menu ) );
+
+  }
+
   logout() {
 
+
       localStorage.removeItem('token');
+      localStorage.removeItem('menu');
       this.router.navigateByUrl('/login');
 
       google.accounts.id.revoke( 'richerdani3@gmail.com', () => {
@@ -64,7 +77,8 @@ public usuario!: Usuario;
 
         this.usuario = new Usuario( nombre, email, '', img, google, role, uid );
         
-        localStorage.setItem('token', resp.token);
+        this.guardarLocalStorage( resp.token, resp.menu );
+        
         return true;
       }), 
       catchError( error => of(false) )
@@ -76,7 +90,7 @@ public usuario!: Usuario;
     return this.http.post(`${ base_url }/usuarios`, formData )
       .pipe(
         tap( (resp: any ) => {
-          localStorage.setItem('token', resp.token);
+          this.guardarLocalStorage( resp.token, resp.menu );
         }),
       );
     
@@ -96,7 +110,9 @@ public usuario!: Usuario;
     return this.http.post(`${ base_url }/login`, formData )
       .pipe(
         tap( (resp: any ) => {
-          localStorage.setItem('token', resp.token);
+
+          this.guardarLocalStorage( resp.token, resp.menu );
+
         }),
       );
     
@@ -107,7 +123,7 @@ public usuario!: Usuario;
       .pipe(
         tap( (resp: any ) => {
           // console.log(resp);
-          localStorage.setItem('token', resp.token);
+          this.guardarLocalStorage( resp.token, resp.menu );
         }),
       )
   }
